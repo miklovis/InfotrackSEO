@@ -1,0 +1,28 @@
+﻿@page
+@model IndexModel
+
+<head>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<h1>SEO Rank Checker</h1>
+<form method="post">
+    @Html.AntiForgeryToken()
+    <div>
+        <label for="keywords">Keywords:</label>
+        <input type="text" id="keywords" name="keywords"
+               placeholder="land registry searches" required />
+    </div>
+    <div>
+        <label for="url">Target URL:</label>
+        <input type="text" id="url" name="url"
+               placeholder="infotrack.co.uk" required />
+    </div>
+    <button type="submit">Search</button>
+</form>
+
+@if (Model.Results != null)
+{
+    <div class="results">
+        <h3>Positions: @Model.Results</h3>
+    </div>
+}
