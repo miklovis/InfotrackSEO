@@ -1,4 +1,5 @@
-﻿using ScrapingGoogle.Models;
+﻿using ScrapingGoogle.Exceptions;
+using ScrapingGoogle.Models;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -41,23 +42,38 @@ namespace ScrapingGoogle.Services
 
         public async Task<List<GoogleSearchResult>> GetSearchResultsAsync(string term, GoogleSearchOptions? options = null)
         {
-            options ??= new GoogleSearchOptions();
+            try
+            {
+                options ??= new GoogleSearchOptions();
 
-            var queryParams = GetQueryParams(term, options);
+                var queryParams = GetQueryParams(term, options);
 
-            var queryString = string.Join("&", queryParams.Select(kvp => $"{kvp.Key}={HttpUtility.UrlEncode(kvp.Value)}"));
-            var url = $"https://www.google.com/search?{queryString}";
+                var queryString = string.Join("&", queryParams.Select(kvp => $"{kvp.Key}={HttpUtility.UrlEncode(kvp.Value)}"));
+                var url = $"https://www.google.com/search?{queryString}";
 
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
-            request.Headers.Add("User-Agent", GetRandomUserAgent());
-            request.Headers.Add("Accept", "*/*");
-            request.Headers.Add("Cookie", "CONSENT=PENDING+987; SOCS=CAESHAgBEhIaAB");
+                var request = new HttpRequestMessage(HttpMethod.Get, url);
+                request.Headers.Add("User-Agent", GetRandomUserAgent());
+                request.Headers.Add("Accept", "*/*");
+                request.Headers.Add("Cookie", "CONSENT=PENDING+987; SOCS=CAESHAgBEhIaAB");
 
-            var response = await _httpClient.SendAsync(request);
-            response.EnsureSuccessStatusCode();
+                var response = await _httpClient.SendAsync(request);
+                response.EnsureSuccessStatusCode();
 
-            var html = await response.Content.ReadAsStringAsync();
-            return ParseResults(html);
+                var html = await response.Content.ReadAsStringAsync();
+                return ParseResults(html);
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new GoogleSearchException("Google request failed", ex);
+            }
+            catch (RegexMatchTimeoutException ex)
+            {
+                throw new GoogleSearchException("Result parsing failed", ex);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private static List<GoogleSearchResult> ParseResults(string html)

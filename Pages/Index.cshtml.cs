@@ -17,17 +17,26 @@ namespace ScrapingGoogle.Pages
 
         public required string Results { get; set; }
 
+        public string? ErrorMessage { get; set; }
+
         public async Task OnPostAsync()
         {
-            var options = new GoogleSearchOptions
+            try
             {
-                NumResults = 100,
-                Lang = "en",
-                Timeout = 5000
-            };
+                var options = new GoogleSearchOptions
+                {
+                    NumResults = 100,
+                    Lang = "en",
+                    Timeout = 5000
+                };
 
-            var results = await _searchService.GetSearchResultsAsync(Keywords, options);
-            Results = _rankingService.GetRankingsOutput(results, TargetUrl);
+                var results = await _searchService.GetSearchResultsAsync(Keywords, options);
+                Results = _rankingService.GetRankingsOutput(results, TargetUrl);
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"An error occurred while processing your request: {ex.Message}";
+            }
         }
     }
 }

@@ -27,3 +27,10 @@
         <h3>Positions: @Model.Results</h3>
     </div>
 }
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">
+        @Model.ErrorMessage
+    </div>
+}
