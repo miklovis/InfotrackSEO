@@ -1,4 +1,5 @@
 ﻿@page
+@using ScrapingGoogle.Pages
 @model IndexModel
 
 <head>
@@ -13,9 +14,9 @@
                placeholder="land registry searches" required />
     </div>
     <div>
-        <label for="url">Target URL:</label>
-        <input type="text" id="url" name="url"
-               placeholder="infotrack.co.uk" required />
+        <label for="targeturl">Target URL:</label>
+        <input type="text" id="TargetUrl" name="TargetUrl"
+               placeholder="www.infotrack.co.uk" required />
     </div>
     <button type="submit" class="btn btn-submit">Search</button>
 </form>

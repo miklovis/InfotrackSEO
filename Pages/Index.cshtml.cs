@@ -2,36 +2,32 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using ScrapingGoogle.Services;
 
-public class IndexModel : PageModel
+namespace ScrapingGoogle.Pages
 {
-    private readonly GoogleSearchService _searchService;
-    private readonly SEORankingService _rankingService;
-
-    public IndexModel(GoogleSearchService searchService, SEORankingService rankingService)
+    public class IndexModel(GoogleSearchService searchService, SEORankingService rankingService) : PageModel
     {
-        _searchService = searchService;
-        _rankingService = rankingService;
-    }
+        private readonly GoogleSearchService _searchService = searchService;
+        private readonly SEORankingService _rankingService = rankingService;
 
-    [BindProperty]
-    public string Keywords { get; set; }
+        [BindProperty]
+        public required string Keywords { get; set; }
 
-    [BindProperty]
-    public string Url { get; set; }
+        [BindProperty(Name = "TargetUrl")]
+        public required string TargetUrl { get; set; }
 
-    public string Results { get; set; }
-    public string ErrorMessage { get; set; }
+        public required string Results { get; set; }
 
-    public async Task OnPostAsync()
-    {
-        var options = new GoogleSearchOptions
+        public async Task OnPostAsync()
         {
-            NumResults = 100,
-            Lang = "en",
-            Timeout = 5000
-        };
+            var options = new GoogleSearchOptions
+            {
+                NumResults = 100,
+                Lang = "en",
+                Timeout = 5000
+            };
 
-        var results = await _searchService.GetSearchResultsAsync(Keywords, options);
-        Results = _rankingService.GetRankingsOutput(results, Url);
+            var results = await _searchService.GetSearchResultsAsync(Keywords, options);
+            Results = _rankingService.GetRankingsOutput(results, TargetUrl);
+        }
     }
 }

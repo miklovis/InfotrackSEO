@@ -13,7 +13,7 @@ namespace ScrapingGoogle.Services
                 .Select(r => r.Position.ToString())
                 .ToList();
 
-            return positions.Any() ? string.Join(", ", positions) : "0";
+            return positions.Count != 0 ? string.Join(", ", positions) : "0";
         }
     }
 }
